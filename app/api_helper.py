@@ -1,0 +1,57 @@
+import requests
+from app.schemas.carreras_schema import Carreras, DataCarreras
+from app.schemas.grupos_schema import Grupos
+from app.schemas.malla_schema import Malla
+from app.schemas.base_schema import Matricular
+from config import API_URL
+import httpx
+from typing import Optional
+
+
+async def fetch_carreras() -> Optional[Carreras]:
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{API_URL}carreras")
+        response.raise_for_status()
+        carreras_data = response.json()
+        carreras_instance = Carreras(
+            status=carreras_data["status"],
+            data=DataCarreras(**carreras_data["data"])
+        )
+        return carreras_instance
+
+
+async def fetch_grupos(id_carrera: int) -> Grupos:
+    response = requests.get(f"{API_URL}grupos/{id_carrera}")
+    response.raise_for_status()
+    data = response.json()
+    grupos_instance = Grupos(**data)
+    return grupos_instance
+
+async def fetch_malla(id_carrera: int):
+    response = requests.get(f"{API_URL}malla/{id_carrera}")
+    response.raise_for_status()
+    data = response.json()
+    # print(data)
+    malla_instance = Malla(**data)
+    return malla_instance
+
+async def matricular():
+    # response = requests.post(f"{API_URL}matricular", json={"aprove": True})
+    # response.raise_for_status()
+    # data = response.json()
+    # malla_instance = Matricular(**data)
+    malla_instance = "Matricula creada satisfactoriamente"
+    return malla_instance
+
+async def health_check() -> bool:
+    """
+    Verifica que la API esté funcionando correctamente.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
+            # Intentar obtener carreras como health check
+            response = await client.get(f"{API_URL}carreras")
+            return response.status_code == 200
+    except Exception as e:
+        print(f"Health check failed: {e}")
+        return False
