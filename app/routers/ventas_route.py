@@ -9,7 +9,7 @@ from app.schemas.ventas_schema import MessageRequest
 from app.schemas.grupos_schema import Grupos as GruposSchema
 from app.schemas.malla_schema import Malla, DataMalla
 from api_helper import fetch_carreras, fetch_grupos, fetch_malla, matricular
-from utils import get_id_by_name, formatear_texto_carreras, get_id_by_name_hybrid
+from utils import get_id_by_name 
 from langchain_community.tools import Tool
 from langchain_core.prompts import PromptTemplate
 from langchain.agents import AgentExecutor, create_react_agent
@@ -111,7 +111,7 @@ def get_carrera_info_tool(input: str):
         if not carreras or not carreras.data:
             return "❌ No hay información de carreras disponible."
             
-        carrera_id = get_id_by_name_hybrid(carreras.data, input, llm)
+        carrera_id = get_id_by_name(carreras.data, input, llm)
         
         if carrera_id == 0 or carrera_id is None:
             return f"❓ No encontré la carrera '{input}'. Verifica el nombre o pregunta '¿qué carreras tienen?' para ver todas las opciones."
