@@ -1,7 +1,7 @@
 from app.schemas.carreras_schema import DataCarreras, Carrera
 from openai import OpenAI
 import json
-from config import TOKEN_LLAMA
+from app.config import TOKEN_LLAMA
 from typing import List
 
 

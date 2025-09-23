@@ -9,19 +9,10 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-# Cargar variables de entorno del archivo .env
-# Esta línea debe ejecutarse antes de cualquier importación de otros módulos
-# que dependan de estas variables, como el router de ventas.
 load_dotenv()
 
 from fastapi import FastAPI
 from app.routers import ventas_route
-from app.routers import prueba_route
-
-
-# Inicializa FastAPI
-# app = FastAPI()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -79,4 +70,3 @@ async def root():
 
 # Incluir router
 app.include_router(ventas_route.router)
-app.include_router(prueba_route.router)

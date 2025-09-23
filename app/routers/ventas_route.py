@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.schemas.base_schema import Consulta
-from agents.ventas import get_agent
+from app.agents.ventas import get_agent
 
 
 router = APIRouter(

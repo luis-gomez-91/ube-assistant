@@ -4,12 +4,12 @@ from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain import hub
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from config import GEMINI_API_KEY
-from services.ventas_service import fetch_carreras, fetch_malla, fetch_grupos
-from schemas.carreras_schema import Carreras
-from utils import formatear_texto_carreras
+from app.config import GEMINI_API_KEY
+from app.services.ventas_service import fetch_carreras, fetch_malla, fetch_grupos
+from app.schemas.carreras_schema import Carreras
+from app.utils import formatear_texto_carreras
 from langchain_core.beta.runnables.context import Context
-from utils import get_id_by_name
+from app.utils import get_id_by_name
 
 # clasificador basado en prompts
 

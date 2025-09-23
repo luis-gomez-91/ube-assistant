@@ -1,9 +1,9 @@
 import requests
-from schemas.carreras_schema import Carreras, DataCarreras
-from schemas.grupos_schema import Grupos
-from schemas.malla_schema import Malla
-from schemas.base_schema import Matricular
-from config import API_URL
+from app.schemas.carreras_schema import Carreras, DataCarreras
+from app.schemas.grupos_schema import Grupos
+from app.schemas.malla_schema import Malla
+from app.schemas.base_schema import Matricular
+from app.config import API_URL
 import httpx
 
 
