@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 import logging
+from fastapi.middleware.cors import CORSMiddleware
 
 
 logging.basicConfig(
@@ -61,6 +62,21 @@ app = FastAPI(
         "email": "admisiones@ube.edu.ec"
     },
     lifespan=lifespan
+)
+
+origins = [
+    "http://localhost:3000",           # Next.js dev
+    "http://127.168.15.27:3000",          # Next.js dev alternativo
+]
+
+# IMPORTANTE: CORS debe ir ANTES de otros middlewares
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Específico
+    allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 
