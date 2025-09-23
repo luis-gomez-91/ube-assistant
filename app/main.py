@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 import logging
-from api_helper import health_check
 
 
 logging.basicConfig(
@@ -28,16 +27,6 @@ from app.routers import prueba_route
 async def lifespan(app: FastAPI):
     # Startup
     logger.info("🚀 Iniciando Dr. Matrícula - UBE Chatbot")
-    
-    # Verificar conectividad con la API
-    try:
-        is_healthy = await health_check()
-        if is_healthy:
-            logger.info("✅ API UBE está funcionando correctamente")
-        else:
-            logger.warning("⚠️  API UBE no responde - algunas funciones podrían fallar")
-    except Exception as e:
-        logger.error(f"❌ Error al verificar API UBE: {e}")
     
     # Verificar variables de entorno críticas
     required_env_vars = ["GEMINI_API_KEY", "API_BASE_URL", "TOKEN_LLAMA"]
