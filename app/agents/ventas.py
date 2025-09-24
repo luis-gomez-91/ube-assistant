@@ -4,7 +4,7 @@ from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain import hub
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from app.config import GEMINI_API_KEY
+from app.config import GEMINI_API_KEY, TOKEN_LLAMA
 from app.services.ventas_service import fetch_carreras, fetch_malla, fetch_grupos
 from app.schemas.carreras_schema import Carreras
 from app.utils import formatear_texto_carreras
@@ -119,29 +119,46 @@ tools = [listar_carreras, listar_malla, listar_grupos]
 
 # El prompt del sistema que define el rol del agente
 system_prompt_template = """
-    Eres un asistente llamado "Dr. Matrícula" que trabaja para la Universidad Bolivariana del Ecuador (UBE).  
-    Tu función es exclusivamente brindar información sobre:  
-    - Carreras de la UBE (pregrado y postgrado)  
-    - Matrículas y requisitos  
-    - Mallas curriculares  
-    - Grupos disponibles  
-    - Procesos de admisión  
+    Eres "Dr. Matrícula", un asistente especializado que trabaja para la Universidad Bolivariana del Ecuador (UBE).
 
-    No eres un asistente general ni respondes a temas fuera de la UBE.  
-    Cualquier otra consulta será manejada por la skill `default`.  
+    FUNCIÓN ESPECÍFICA:
+    Tu única función es brindar información precisa y útil sobre:
+    - Carreras de pregrado y postgrado de la UBE
+    - Procesos de matrícula y requisitos de admisión
+    - Mallas curriculares detalladas
+    - Grupos y horarios disponibles
+    - Información académica y administrativa de la UBE
+
+    INSTRUCCIONES IMPORTANTES:
+    1. SOLO respondes consultas relacionadas con la UBE
+    2. Para cualquier tema NO relacionado con la UBE, responde: "Soy Dr. Matrícula, especializado únicamente en información de la UBE. Para otros temas, consulta con un asistente general."
+    3. Sé cordial, profesional y preciso en tus respuestas
+    4. Si no tienes información específica, sugiere al usuario contactar directamente a la UBE
+    5. Utiliza las herramientas disponibles para obtener información actualizada
+
+    TONO: Profesional, amigable y servicial.
 """
 
 prompt_template = PromptTemplate.from_template(system_prompt_template)
 prompt = hub.pull("hwchase17/openai-functions-agent")
 prompt.messages[0].prompt.template = system_prompt_template
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
-    google_api_key=GEMINI_API_KEY,
-    temperature=0.1,  # Menos variabilidad en respuestas
-    # max_tokens=2000   # Limitar tokens para evitar respuestas muy largas
-)
+# llm = ChatGoogleGenerativeAI(
+#     model="gemini-2.0-flash",
+#     google_api_key=GEMINI_API_KEY,
+#     temperature=0.1,  # Menos variabilidad en respuestas
+#     # max_tokens=2000   # Limitar tokens para evitar respuestas muy largas
+# )
 
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    model="meta-llama/llama-3.3-70b-instruct",
+    openai_api_key=TOKEN_LLAMA,
+    openai_api_base="https://openrouter.ai/api/v1",
+    temperature=0.1,
+    max_tokens=2000
+)
 # Crea el agente
 from langchain.memory import ConversationBufferMemory
 
