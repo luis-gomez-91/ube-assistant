@@ -143,22 +143,22 @@ prompt_template = PromptTemplate.from_template(system_prompt_template)
 prompt = hub.pull("hwchase17/openai-functions-agent")
 prompt.messages[0].prompt.template = system_prompt_template
 
-# llm = ChatGoogleGenerativeAI(
-#     model="gemini-2.0-flash",
-#     google_api_key=GEMINI_API_KEY,
-#     temperature=0.1,  # Menos variabilidad en respuestas
-#     # max_tokens=2000   # Limitar tokens para evitar respuestas muy largas
-# )
-
-from langchain_openai import ChatOpenAI
-
-llm = ChatOpenAI(
-    model="meta-llama/llama-3.3-70b-instruct",   # modelo disponible en OpenRouter
-    openai_api_key=TOKEN_LLAMA,
-    openai_api_base="https://openrouter.ai/api/v1",  # base URL de OpenRouter
-    temperature=0.1,
-    max_tokens=2000,
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash",
+    google_api_key=GEMINI_API_KEY,
+    temperature=0.1,  # Menos variabilidad en respuestas
+    # max_tokens=2000   # Limitar tokens para evitar respuestas muy largas
 )
+
+# from langchain_openai import ChatOpenAI
+
+# llm = ChatOpenAI(
+#     model="meta-llama/llama-3.3-70b-instruct",   # modelo disponible en OpenRouter
+#     openai_api_key=TOKEN_LLAMA,
+#     openai_api_base="https://openrouter.ai/api/v1",  # base URL de OpenRouter
+#     temperature=0.1,
+#     max_tokens=2000,
+# )
 
 
 # llm = ChatOpenAI(
