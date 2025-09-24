@@ -4,7 +4,7 @@ from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain import hub
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from app.config import GEMINI_API_KEY, TOKEN_LLAMA
+from app.config import GEMINI_API_KEY, TOKEN_LLAMA, OPENAI_API_KEY
 from app.services.ventas_service import fetch_carreras, fetch_malla, fetch_grupos
 from app.schemas.carreras_schema import Carreras
 from app.utils import formatear_texto_carreras
@@ -153,12 +153,21 @@ prompt.messages[0].prompt.template = system_prompt_template
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(
-    model="meta-llama/llama-3.3-70b-instruct",
+    model="meta-llama/llama-3.3-70b-instruct",   # modelo disponible en OpenRouter
     openai_api_key=TOKEN_LLAMA,
-    openai_api_base="https://openrouter.ai/api/v1",
+    openai_api_base="https://openrouter.ai/api/v1",  # base URL de OpenRouter
     temperature=0.1,
-    max_tokens=2000
+    max_tokens=2000,
 )
+
+
+# llm = ChatOpenAI(
+#     model="gpt-4o-mini",
+#     openai_api_key=OPENAI_API_KEY,
+#     temperature=0.1,
+#     max_tokens=2000
+# )
+
 # Crea el agente
 from langchain.memory import ConversationBufferMemory
 
