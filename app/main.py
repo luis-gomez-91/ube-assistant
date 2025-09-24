@@ -67,6 +67,7 @@ app = FastAPI(
 origins = [
     "http://localhost:3000",           # Next.js dev
     "http://127.168.15.27:3000",          # Next.js dev alternativo
+    "https://ube-chatbot.vercel.app/",
 ]
 
 # IMPORTANTE: CORS debe ir ANTES de otros middlewares

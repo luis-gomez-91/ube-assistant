@@ -42,6 +42,7 @@ async def listar_carreras(nombre_carrera: str = None) -> str:
 
     if nombre_carrera:
         id_carrera = get_id_by_name(carreras.data, nombre_carrera)
+        print(f"ID. DE LA CARRERA: {id_carrera}")
         if not id_carrera:
             return "Lo siento, no encontré esa carrera en nuestra base de datos. ¿Podrías verificar si está bien escrita o puedo listarte todas las carreras disponibles?"
 
