@@ -29,11 +29,13 @@ async def listar_carreras(nombre_carrera: str = None) -> str:
     """
     Retorna un resumen completo de las carreras de la UBE.
     Retorna informacion de carreras especificas segun se solicita.
+    Los IDS usalos para apuntar a otro endpont de ser necesario, no los muestres en la conversacion con el usuario.
+
     Incluye:
-    - Nombre de la carrera
-    - Precios
-    - Sesiones
-    - Modalidades
+    - Nombre de la carrera.
+    - Precios de inscripcion, matricula y nuemro de cuotas.
+    - Sesiones.
+    - Modalidades.
     """
 
     carreras: Carreras = await carreras_manager.get_carreras()
@@ -46,6 +48,27 @@ async def listar_carreras(nombre_carrera: str = None) -> str:
     grado = formatear_texto_carreras(carreras.data.grado, "grado")
     postgrado = formatear_texto_carreras(carreras.data.postgrado, "postgrado")
     response = f"""{grado}\n\n{postgrado}\nLos IDS usalos para apuntar a otro endpont de ser necesario, no los muestres en la conversacion con el usuario."""
+     
+    preguntas_sugeridas = """
+    ¿Quieres que te muestre solo las carreras de pregrado o de postgrado?
+    ¿Deseas conocer los requisitos de ingreso para alguna de estas carreras?
+    ¿Quieres saber la duración promedio de una carrera o maestría?
+    ¿Quieres que te muestre qué carreras están disponibles en modalidad online o híbrida?
+    ¿Deseas que te organice las carreras por áreas (salud, tecnología, educación, negocios)?
+    ¿Quieres información sobre becas o facilidades de pago?
+    ¿Te interesa que te cuente sobre la salida laboral de alguna carrera?
+    ¿Quieres que te muestre los grupos disponibles próximos a iniciar clases?
+    """
+
+    response = f"""
+    {grado}
+
+    {postgrado}
+
+    Preguntas sugeridas para continuar:
+    {preguntas_sugeridas}
+    """
+    
     return response
 
 @tool
@@ -55,8 +78,8 @@ async def listar_malla(nombre_carrera: str) -> str:
         Cada periodo es equivalente a un semestre academico.
 
         Ejemplo de uso:
-        - Mensaje del usuario: "¿Cuál es la malla de la carrera de Derecho?"
-        - Mensaje del usuario: "¿Dame las asignaturas de la carrera de Derecho?"
+        - "¿Cuál es la malla de la carrera de Derecho?"
+        - "¿Dame las asignaturas de la carrera de Derecho?"
     """
     carreras: Carreras = await carreras_manager.get_carreras()
     id_carrera = get_id_by_name(carreras.data, nombre_carrera)
@@ -83,16 +106,32 @@ async def listar_malla(nombre_carrera: str) -> str:
                 result += f"\n  - Créditos: {asig.creditos}"
     result += "\n"
 
+    preguntas_sugeridas = """
+    ¿Quieres que te dé una descripción más detallada de alguna asignatura?
+    ¿Deseas saber la duración total de la carrera?
+    ¿Quieres que te muestre el perfil de egreso de esta carrera?
+    ¿Quieres conocer en qué modalidades (presencial, online, híbrida) se ofrece esta carrera?
+    ¿Quieres que te muestre las oportunidades laborales al finalizar la carrera?
+    ¿Te interesa conocer los precios o facilidades de pago de esta carrera?
+    """
+
+    result += f"\nPreguntas sugeridas para continuar:\n{preguntas_sugeridas}"
     return result
 
 @tool
 async def listar_grupos(nombre_carrera: str) -> str:
     """
-    Esta tool se activa cuando el usuario pregunta por los grupos o cupos disponibles de una carrera específica.
+    Esta tool se activa cuando el usuario pregunta por:
+    - Los grupos o cupos disponibles de una carrera específica.
+    - Las modalidades de estudio de una carrera.
+    - Los precios de una carrera.
+    - La matrícula o inscripción en una carrera.
 
     Ejemplo de uso:
     - "¿Qué grupos hay para la carrera de Fisioterapia?"
-    - "Cursos disonibles?"
+    - "¿Qué modalidades tiene la carrera de Derecho?"
+    - "¿Cuánto cuesta estudiar Psicología?"
+    - "Quiero matricularme en Enfermería"
     """
 
     carreras: Carreras = await carreras_manager.get_carreras()
@@ -113,6 +152,16 @@ async def listar_grupos(nombre_carrera: str) -> str:
         f"- Paralelo: {grupo.nombre}, Fecha de inicio de clases aproximado: {grupo.fecha_inicio}, Sesion: {grupo.sesion}, Modalidad: {grupo.modalidad}"
         for grupo in grupos
     )
+
+    preguntas_sugeridas = """
+    ¿Quieres que te muestre el proceso de matrícula paso a paso?
+    ¿Deseas saber si hay facilidades de pago o becas disponibles?
+    ¿Quieres comparar esta carrera con otra para ver precios y modalidades?
+    ¿Quieres que te muestre las fechas exactas de inscripción?
+    ¿Deseas información sobre requisitos para matricularte en esta carrera?
+    """
+
+    result += f"\n\nPreguntas sugeridas para continuar:\n{preguntas_sugeridas}"
     return result  
 
 tools = [listar_carreras, listar_malla, listar_grupos]
