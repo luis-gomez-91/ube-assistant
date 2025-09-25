@@ -28,37 +28,43 @@ carreras_manager = CarrerasManager()
 async def listar_carreras(nombre_carrera: str = None) -> str:
     """
     Retorna un resumen completo de las carreras de la UBE.
-    Retorna informacion de carreras especificas segun se solicita.
-    Los IDS usalos para apuntar a otro endpont de ser necesario, no los muestres en la conversacion con el usuario.
+    Retorna información de carreras específicas según se solicita.
+    Los IDS se usan solo para apuntar a otro endpoint de ser necesario,
+    no se muestran en la conversación con el usuario.
 
     Incluye:
     - Nombre de la carrera.
-    - Precios de inscripcion, matricula y nuemro de cuotas.
+    - Precios de inscripción, matrícula y número de cuotas.
     - Sesiones.
     - Modalidades.
     """
 
     carreras: Carreras = await carreras_manager.get_carreras()
 
-    if nombre_carrera:
-        id_carrera = get_id_by_name(carreras.data, nombre_carrera)
-        print(f"ID. DE LA CARRERA: {id_carrera}")
-        if not id_carrera:
-            return "Lo siento, no encontré esa carrera en nuestra base de datos. ¿Podrías verificar si está bien escrita o puedo listarte todas las carreras disponibles?"
+    # if nombre_carrera:
+    #     id_carrera = get_id_by_name(carreras.data, nombre_carrera)
+    #     print(f"ID. DE LA CARRERA: {id_carrera}")
+    #     if not id_carrera:
+    #         f"""
+    #             Pregunta si desea conocer información de carreras parecidas a {nombre_carrera}
+    #         """
+    #         return "Lo siento, no encontré esa carrera en nuestra base de datos. ¿Podrías verificar si está bien escrita o prefieres que te muestre todas las carreras disponibles?"
 
     grado = formatear_texto_carreras(carreras.data.grado, "grado")
     postgrado = formatear_texto_carreras(carreras.data.postgrado, "postgrado")
-    response = f"""{grado}\n\n{postgrado}\nLos IDS usalos para apuntar a otro endpont de ser necesario, no los muestres en la conversacion con el usuario."""
-     
+
+    # Preguntas sugeridas mejoradas
     preguntas_sugeridas = """
-    ¿Quieres que te muestre solo las carreras de pregrado o de postgrado?
-    ¿Deseas conocer los requisitos de ingreso para alguna de estas carreras?
-    ¿Quieres saber la duración promedio de una carrera o maestría?
-    ¿Quieres que te muestre qué carreras están disponibles en modalidad online o híbrida?
-    ¿Deseas que te organice las carreras por áreas (salud, tecnología, educación, negocios)?
-    ¿Quieres información sobre becas o facilidades de pago?
-    ¿Te interesa que te cuente sobre la salida laboral de alguna carrera?
-    ¿Quieres que te muestre los grupos disponibles próximos a iniciar clases?
+    ¿Prefieres que te muestre únicamente las carreras de pregrado o las de postgrado?
+    ¿Quieres conocer los requisitos de ingreso para una carrera en particular?
+    ¿Te interesa saber la duración promedio de una carrera o una maestría?
+    ¿Quieres ver cuáles carreras están disponibles en modalidad online, presencial o híbrida?
+    ¿Prefieres que te organice las carreras por áreas como salud, tecnología, educación o negocios?
+    ¿Quieres información sobre becas, descuentos o facilidades de pago?
+    ¿Te interesa conocer las oportunidades laborales de una carrera específica?
+    ¿Deseas que te muestre los grupos y fechas de inicio más cercanos?
+    ¿Quieres que te sugiera carreras relacionadas a tus intereses?
+    ¿Te gustaría comparar dos carreras para ver cuál se ajusta mejor a lo que buscas?
     """
 
     response = f"""
@@ -69,7 +75,7 @@ async def listar_carreras(nombre_carrera: str = None) -> str:
     Preguntas sugeridas para continuar:
     {preguntas_sugeridas}
     """
-    
+
     return response
 
 @tool
@@ -165,11 +171,110 @@ async def listar_grupos(nombre_carrera: str) -> str:
     result += f"\n\nPreguntas sugeridas para continuar:\n{preguntas_sugeridas}"
     return result  
 
-tools = [listar_carreras, listar_malla, listar_grupos]
+@tool
+async def requisitos_matriculacion(nombre_carrera: str = None) -> str:
+    """
+    Retorna los requisitos de matriculación en la UBE.
+    Puede mostrar requisitos generales o específicos para una carrera en particular.
+    """
+
+    # Requisitos generales
+    requisitos_generales = """
+    Requisitos generales para matriculación:
+    - Copia de cédula de identidad o pasaporte.
+    - Certificado de votación (para mayores de 18 años).
+    - Título de bachiller o acta de grado (apostillado si es extranjero).
+    - Certificado de notas del colegio.
+    - 2 fotografías tamaño carnet.
+    - Pago de inscripción y matrícula según corresponda.
+    """
+
+    # Obtener todas las carreras
+    carreras_obj = await carreras_manager.get_carreras()
+    
+    # Normalizamos la lista de carreras (grados + postgrados)
+    todas_carreras = []
+    if hasattr(carreras_obj.data, 'grado'):
+        todas_carreras.extend(carreras_obj.data.grado)
+    if hasattr(carreras_obj.data, 'postgrado'):
+        todas_carreras.extend(carreras_obj.data.postgrado)
+
+    if nombre_carrera:
+        id_carrera = get_id_by_name(carreras_obj.data, nombre_carrera)
+        if not id_carrera:
+            return f"No encontré la carrera '{nombre_carrera}'. ¿Quieres que te muestre los requisitos generales?"
+
+        # Aquí podrías agregar requisitos específicos por carrera si los tienes
+        return f"Requisitos específicos para {nombre_carrera}:\n\n{requisitos_generales}\n\n(Pueden variar según la carrera, confirma con admisiones)."
+
+    # Preguntas sugeridas para el usuario
+    preguntas_sugeridas = """
+    ¿Quieres que te muestre los costos de inscripción y matrícula?
+    ¿Deseas conocer las fechas de inicio de clases?
+    ¿Quieres que te muestre carreras en modalidad online para facilitar tu ingreso?
+    ¿Deseas saber si puedes aplicar a becas o descuentos en la matrícula?
+    """
+
+    response = f"""
+    {requisitos_generales}
+
+    Preguntas sugeridas para continuar:
+    {preguntas_sugeridas}
+    """
+
+    return response
+
+@tool
+async def matricular(nombre_carrera: str) -> str:
+    """
+    Simula la matriculación de una carrera en la UBE.
+    Retorna un mensaje de confirmación y un link de pago.
+    """
+
+    if not nombre_carrera:
+        return "Por favor, indica el nombre de la carrera que deseas matricular."
+
+    # Aquí podrías agregar validaciones reales usando get_id_by_name si quieres
+    # id_carrera = get_id_by_name(await carreras_manager.get_carreras(), nombre_carrera)
+    # if not id_carrera:
+    #     return f"No encontré la carrera '{nombre_carrera}'. Verifica el nombre."
+
+    # Generar mensaje de confirmación y link de pago de ejemplo
+    link_pago = f"https://ube.edu.ec/pago/matricula?carrera={nombre_carrera.replace(' ', '%20')}&token=EJEMPLO123"
+
+    response = f"""
+        ¡Matricula realizada exitosamente para la carrera '{nombre_carrera}'! 🎓
+
+        Para completar el proceso, realiza tu pago en el siguiente link:
+        {link_pago}
+
+        Recuerda que tu matrícula se confirmará una vez recibido el pago.
+    """
+
+    return response
+
+
+@tool
+async def default_tool(query: str = None) -> str:
+    """
+    Skill por defecto que responde cuando el usuario hace consultas
+    fuera del alcance definido (carreras, grupos, mallas, matrículas de la UBE).
+    """
+    return (
+        "Soy Dr. Matrícula, especializado únicamente en información de la UBE. "
+        "No puedo resolver preguntas como operaciones matemáticas u otros temas externos. "
+        "¿Quieres que te muestre información sobre nuestras carreras o procesos de matrícula?\n\n"
+        "Si deseas más información puedes comunicarte por:\n"
+        "- 📲 WhatsApp: https://api.whatsapp.com/send/?phone=593989758382&text=Me+gustar%C3%ADa+saber+informaci%C3%B3n+sobre+las+carreras&type=phone_number&app_absent=0\n"
+        "- 🌐 Página oficial: https://ube.edu.ec/"
+    )
+
+
+tools = [listar_carreras, listar_malla, listar_grupos, default_tool, requisitos_matriculacion, matricular]
 
 # El prompt del sistema que define el rol del agente
 system_prompt_template = """
-    Eres "Dr. Matrícula", un asistente especializado que trabaja para la Universidad Bolivariana del Ecuador (UBE).
+    Eres "Dr. Matrícula", un agente virtual de la Universidad Bolivariana del Ecuador (UBE).
 
     FUNCIÓN ESPECÍFICA:
     Tu única función es brindar información precisa y útil sobre:
@@ -187,6 +292,8 @@ system_prompt_template = """
     5. Utiliza las herramientas disponibles para obtener información actualizada
 
     TONO: Profesional, amigable y servicial.
+
+    Si la pregunta no está relacionada con UBE, utiliza siempre la herramienta default_tool.
 """
 
 prompt_template = PromptTemplate.from_template(system_prompt_template)
@@ -251,22 +358,3 @@ def get_agent(user_id: str):
     )
     return agent_executor
 
-
-# from langchain_core.runnables.passthrough import RunnablePassthrough
-# from langchain_core.output_parsers.string import StrOutputParser
-
-
-# chain = (
-#     Context.setter("input")
-#     | {
-#         "context": RunnablePassthrough() | Context.setter("context"),
-#         "question": RunnablePassthrough(),
-#     }
-#     | PromptTemplate.from_template("{context} {question}")
-#     | StrOutputParser()
-#     | {
-#         "result": RunnablePassthrough(),
-#         "context": Context.getter("context"),
-#         "input": Context.getter("input"),
-#     }
-# )

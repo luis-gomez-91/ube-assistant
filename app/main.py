@@ -68,6 +68,7 @@ origins = [
     "http://localhost:3000",           # Next.js dev
     "http://127.168.15.27:3000",          # Next.js dev alternativo
     "https://ube-chatbot.vercel.app/",
+    "http://10.156.222.236:3000/",
 ]
 
 # IMPORTANTE: CORS debe ir ANTES de otros middlewares
